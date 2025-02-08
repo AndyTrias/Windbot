@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.get('/api/weather/:station_id', async (req: Request, res: Response) => {
     logger.info(`GET /api/weather/${req.params.station_id}`);
-    const station_id = parseInt(req.params.station_id, 10);
+    const station_id = parseInt(req.params.station_id || '0', 10);
 
     if (isNaN(station_id)) {
         return res.status(400).json({

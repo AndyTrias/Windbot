@@ -33,7 +33,6 @@ export async function scrapeWindguru(stationId: number): Promise<WeatherData[]> 
         await waitForSelector(page);
     
 
-        logger.info('Scraping wind speed and temperature data from Windguru');
         return await extractWeatherData(page);
         }
     catch (error) {
@@ -48,24 +47,25 @@ async function extractWeatherData(page: Page) {
     logger.info('Scraping wind speed and temperature data from Windguru');
 
     const [windSpeeds, temperatures, windGusts, wave, windDirection, dates] = await Promise.all([
-        page.$eval(SELECTORS.windSpeed, extractTdTextContentFromTr),
-        page.$eval(SELECTORS.temperature, extractTdTextContentFromTr),
-        page.$eval(SELECTORS.windGusts, extractTdTextContentFromTr),
-        page.$eval(SELECTORS.wave, extractWaveFromTr),
-        page.$eval(SELECTORS.windDirection, extractWindDirectionFromSpan),
-        page.$eval(SELECTORS.dates, extractTdTextContentFromTr)
+        page.$eval(SELECTORS.windSpeed!, extractTdTextContentFromTr),
+        page.$eval(SELECTORS.temperature!, extractTdTextContentFromTr),
+        page.$eval(SELECTORS.windGusts!, extractTdTextContentFromTr),
+        page.$eval(SELECTORS.wave!, extractWaveFromTr),
+        page.$eval(SELECTORS.windDirection!, extractWindDirectionFromSpan),
+        page.$eval(SELECTORS.dates!, extractTdTextContentFromTr)
     ]);
 
     const weatherData: WeatherData[] = [];
     for (let i = 0; i < windSpeeds.length; i++) {
         weatherData.push({
-            temperature: temperatures[i],
-            windSpeed: windSpeeds[i],
-            windGusts: windGusts[i],
-            wave: wave[i],
-            windDirection: windDirection[i],
-            dates: parseWindGuruDate(dates[i])
+            temperature : temperatures[i] || '',
+            windSpeed: windSpeeds[i] || '',
+            windGusts: windGusts[i] || '',
+            wave: wave[i] || '',
+            windDirection: windDirection[i] || '',
+            dates: parseWindGuruDate(dates[i] || '')
         });
+
     }
 
     return weatherData;
