@@ -1,0 +1,31 @@
+{
+    "name": "wind-bot",
+    "version": "1.0.0",
+    "description": "wind-bot",
+    "main": "dist/app.js",
+    "scripts": {
+        "start": "node dist/app.js",
+        "dev": "nodemon --ext ts --exec ts-node src/app.ts",
+        "build": "tsc",
+        "watch": "tsc -w"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.21",
+        "@types/node": "^20.11.0",
+        "nodemon": "^3.1.9",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    },
+    "keywords": [
+        "wind",
+        "bot"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "date-fns-tz": "^2.0.0",
+        "express": "^4.21.2",
+        "puppeteer": "^24.1.1",
+        "winston": "^3.17.0"
+    }
+}
