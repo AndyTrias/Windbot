@@ -2,6 +2,7 @@ import logger from './logger';
 import puppeteer, { Page } from 'puppeteer';
 import { WeatherData } from './types';
 import { parseWindGuruDate, extractTdTextContent, extractWindDirection, extractWave } from './parser';
+import {config } from './config';
 
 const SELECTORS = {
     windSpeed: '#tabid_0_0_WINDSPD',
@@ -44,15 +45,12 @@ async function extractWeatherData(page: Page): Promise<WeatherData[]> {
 
 export async function scrapeWindguru(stationId: number): Promise<WeatherData[]> {
 
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    const browser = await puppeteer.launch(config.puppeteerOptions);
     const page = await browser.newPage();
 
     try {
         logger.info(`Navigating to Windguru station page for ID: ${stationId}`);
-        await page.goto(`https://www.windguru.cz/${stationId}`);
+        await page.goto(`${config.baseUrl}/${stationId}`);
         await waitForSelectors(page);
         
         return await extractWeatherData(page);
