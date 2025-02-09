@@ -1,7 +1,7 @@
 import logger from './logger';
 import puppeteer, { Page }  from 'puppeteer';
 import { WeatherData } from './types';
-import { parseWindGuruDate } from './parser';
+import { parseWindGuruDate, extractTdTextContentFromTr, extractWindDirectionFromSpan, extractWaveFromTr } from './parser';
 
 
 const SELECTORS: { [key: string]: string } = {
@@ -61,7 +61,7 @@ async function extractWeatherData(page: Page) {
             temperature : temperatures[i] || '',
             windSpeed: windSpeeds[i] || '',
             windGusts: windGusts[i] || '',
-            wave: wave[i] || '',
+            wave: wave[i] || '0',
             windDirection: windDirection[i] || '',
             dates: parseWindGuruDate(dates[i] || '')
         });
@@ -71,14 +71,4 @@ async function extractWeatherData(page: Page) {
     return weatherData;
 }
 
-
-const extractTdTextContentFromTr = (tr: Element) => 
-    Array.from(tr.querySelectorAll('td')).map(td => td.textContent || '');
-
-const extractWindDirectionFromSpan = (tr: Element) => 
-    Array.from(tr.querySelectorAll('td'))
-            .map(td => td.querySelector('span')?.getAttribute('title') || '');
-
-const extractWaveFromTr = (tr: Element) => 
-    Array.from(tr.querySelectorAll('td')).map(td => td.textContent?.trim() || '0');
 
