@@ -29,7 +29,7 @@ function validateConfig(): Config {
     nodeEnv: process.env.NODE_ENV || 'development',
     baseUrl: process.env.BASE_URL || 'https://www.windguru.cz',
     puppeteerOptions: {
-      headless: process.env.PUPPETEER_HEADLESS !== 'false',
+      headless: false,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',

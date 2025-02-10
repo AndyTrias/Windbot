@@ -1,6 +1,6 @@
 import logger from './logger';
 import puppeteer, { Page } from 'puppeteer';
-import { WeatherData } from './types';
+import { WeatherData, WeatherStation } from './types';
 import { parseWindGuruDate, extractTdTextContent, extractWindDirection, extractWave } from './parser';
 import {config } from './config';
 
@@ -10,7 +10,8 @@ const SELECTORS = {
     windGust: '#tabid_0_0_GUST',
     windDirection: '#tabid_0_0_SMER',
     wave: '#tabid_0_0_HTSGW',
-    date: '#tabid_0_0_dates'
+    date: '#tabid_0_0_dates',
+    stationName: '.spot-name.wg-guide'  
 } as const;
 
 
@@ -39,21 +40,51 @@ async function extractWeatherData(page: Page): Promise<WeatherData[]> {
         });
 
     }
-
     return weatherData;
+
 }
 
-export async function scrapeWindguru(stationId: number): Promise<WeatherData[]> {
+async function extractStationName(page: Page): Promise<string> {
+    return await page.$eval(SELECTORS.stationName, (el) => el.textContent || '').then(text => text.trim()); 
+}
+
+
+export async function scrapeWindguru(stationId: number, stationName: string): Promise<WeatherStation> {
+
 
     const browser = await puppeteer.launch(config.puppeteerOptions);
     const page = await browser.newPage();
 
     try {
-        logger.info(`Navigating to Windguru station page for ID: ${stationId}`);
-        await page.goto(`${config.baseUrl}/${stationId}`);
+
+        if (stationId) {
+            logger.info(`Navigating to Windguru station page for ID: ${stationId}`);
+            await page.goto(`${config.baseUrl}/${stationId}`);
+        } else {
+            logger.info(`Navigating to Windguru station page for name: ${stationName}`);
+            await page.setViewport({width: 1080, height: 1024});
+            await page.goto(`${config.baseUrl}`);
+
+            await new Promise(resolve => setTimeout(resolve, 5000)); 
+            await page.type("#searchspot", stationName);
+            
+            await new Promise(resolve => setTimeout(resolve, 5000));  
+            
+            await page.keyboard.press('Enter'); 
+            await new Promise(resolve => setTimeout(resolve, 5000)); 
+        }
+
+
         await waitForSelectors(page);
+    
+
+        return {
+            id: stationId,
+            stationName: await extractStationName(page),
+            weather: await extractWeatherData(page)
+        }
         
-        return await extractWeatherData(page);
+
     } finally {
         await browser.close();
     }

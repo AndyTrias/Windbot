@@ -7,6 +7,12 @@ export interface WeatherData {
     date: Date;
 }
 
+export interface WeatherStation {
+    id: number;
+    stationName: string;
+    weather: WeatherData[];
+}
+
 export interface ApiError {
     error: string;
     details: string;
