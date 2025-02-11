@@ -1,7 +1,22 @@
 services:
-  wind-bot:
-    build: .
+  windbot-api:
+    build:
+      context: ./windbot-api
+      dockerfile: Dockerfile
     ports:
-      - "${PORT:-3000}:3000"
+      - "${GPORT:-3000}:3000"
+    env_file:
+      - ./windbot-api/.env
     restart: always
-    # network_mode: host
+
+  windbot-core:
+    build:
+      context: ./windbot-core
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./windbot-core/.env  
+    depends_on:
+      - windbot-api
+    restart: always
