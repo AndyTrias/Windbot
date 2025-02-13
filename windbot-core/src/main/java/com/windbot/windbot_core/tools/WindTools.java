@@ -1,5 +1,6 @@
-package com.windbot.windbot_core.service.ai;
+package com.windbot.windbot_core.tools;
 
+import com.windbot.windbot_core.api.wind.WeatherStation;
 import com.windbot.windbot_core.integration.WindApiIntegrationService;
 import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
@@ -15,7 +16,7 @@ public class WindTools {
     }
 
     @Tool
-    String getWindInformation(@P("Location for the weather") String location) {
+    WeatherStation getWindInformation(@P("Location for the weather") String location) {
         return windApiIntegrationService.getWindInformation(location);
     }
 }

@@ -1,4 +1,4 @@
-package com.windbot.windbot_core.service.ai;
+package com.windbot.windbot_core.assistant;
 
 import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
@@ -6,7 +6,7 @@ import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.spring.AiService;
 
 @AiService
-public interface Assistant {
+public interface WindBotAssistant {
 
     @SystemMessage("""
             Your name is Windy, you are a wind bot agent that retrieves weather forecasting services, 
@@ -22,6 +22,6 @@ public interface Assistant {
             
             Today is {{current_date}}.
             """)
-    String answer(@UserMessage String message);
+    String answer(@MemoryId String memoryId, @UserMessage String message);
 
 }

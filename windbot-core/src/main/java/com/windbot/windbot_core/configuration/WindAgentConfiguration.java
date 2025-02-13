@@ -1,6 +1,6 @@
 package com.windbot.windbot_core.configuration;
 
-import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WindAgentConfiguration {
     @Bean
-    ChatMemory chatMemory() {
-        return MessageWindowChatMemory.withMaxMessages(10);
+    ChatMemoryProvider chatMemory() {
+        return memoryId ->  MessageWindowChatMemory.builder()
+                .id(memoryId)
+                .maxMessages(10)
+                .build();
     }
 }
