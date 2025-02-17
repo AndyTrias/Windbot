@@ -1,7 +1,8 @@
 import logger from './logger';
+import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'; 
 
 // Example input: "S8.09h" or "Su10.17H" -> day of current/next month and hour
-export function parseWindGuruDate(dateString: string): Date {
+export function parseWindGuruDate(dateString: string, sourceTimezone: string = 'America/New_York', targetTimezone: string = 'UTC'): Date {
     const match = dateString.match(/\d+/);
 
     if (!match) {
@@ -12,19 +13,26 @@ export function parseWindGuruDate(dateString: string): Date {
     const day = parseInt(match[0], 10);
     const hour = parseInt(dateString.substring(dateString.indexOf('.') + 1, dateString.length - 1), 10);
     
+    // Create date in source timezone
     const date = new Date();
     date.setDate(day);
-    date.setHours(hour, 0, 0, 0); 
-
+    date.setHours(hour, 0, 0, 0);
+    
+    // Convert to UTC from source timezone
+    const utcDate = zonedTimeToUtc(date, sourceTimezone);
+    
+    // Convert from UTC to target timezone
+    const targetDate = utcToZonedTime(utcDate, targetTimezone);
+    
     // It may be next month 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     
-    if (date < yesterday) {
-        date.setMonth(date.getMonth() + 1);
+    if (targetDate < yesterday) {
+        targetDate.setMonth(targetDate.getMonth() + 1);
     }
 
-    return date;
+    return targetDate;
 }
 
 export const extractTdTextContent = (tr: Element): string[] => 
