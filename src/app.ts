@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 import logger from './logger';
-import { scrapeWindguruById, scrapeWindguruByName } from './scraper';
+import { scrapeWindguru, navigateById, navigateByName } from './scraper';
 import { config } from './config';
 
 const app = express();
@@ -14,7 +14,7 @@ app.use(express.json());
 app.get('/api/weather/id/:station_id', async (req: Request, res: Response) => {
     const station_id = parseInt(req.params.station_id!, 10);
 
-    logger.info(`GET /api/weather/id - station_id: ${station_id}`);
+    logger.info(`GET /api/weather/- station_id: ${station_id}`);
 
     if (isNaN(station_id)) {
         return res.status(400).json({
@@ -23,7 +23,7 @@ app.get('/api/weather/id/:station_id', async (req: Request, res: Response) => {
     }
 
     try {
-        const weatherData = await scrapeWindguruById(station_id);
+        const weatherData = await scrapeWindguru(navigateById(station_id));
         
         if (!weatherData) {
             return res.status(404).json({
@@ -52,7 +52,7 @@ app.get('/api/weather/name', async (req: Request, res: Response) => {
     }
 
     try {
-        const weatherData = await scrapeWindguruByName(station_name);
+        const weatherData = await scrapeWindguru(navigateByName(station_name));
         
         if (!weatherData) {
             return res.status(404).json({
